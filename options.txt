@@ -9,4 +9,4 @@ aiSurvivalRate:
 freqvencyOfAddingMemoryCells:
 4
 generationsPerClick:
-1
+1000

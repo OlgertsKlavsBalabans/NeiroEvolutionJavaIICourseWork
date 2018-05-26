@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 public class MainMenu {
 
-    int generationsPerClick;
+    int generationsPerClick; //done
     int aiInstancesPerGeneration;
     int maximumGameLength;
     int maximumMemoryCells;
@@ -225,7 +225,9 @@ public class MainMenu {
 
         @Override
         public void mousePressed(MouseEvent e) {
-
+            for (int i = 0; i<generationsPerClick;i++) {
+                
+            
             aiBrainReactToaiInput();
             System.out.println("Done with simulation!");
             sortAiFitnessScores();
@@ -236,6 +238,7 @@ public class MainMenu {
             saveBestAI();
             resetVariablesAndArrays();
             thereIsGeneratedAi = true;
+            }
         }
 
         @Override
@@ -275,7 +278,7 @@ public class MainMenu {
 
     void makeNewGeneration() {
         Random rnd = new Random();
-        int hrassness = 50;
+        int hrassness = aiSurvivalRate;
         boolean add = true;
         int firstEmtyCell = rnd.nextInt(100);
         int survivors = 10 / (100 / 50); // 10 - how many ai In one generation
@@ -283,7 +286,7 @@ public class MainMenu {
             survivors = 1;
         }
         for (int i = 0; i < 10 - survivors; i++) {
-            if (i % 3 == 0) {
+            if (i % freqvencyOfAddingMemoryCells == 0) {
                 add = false;
             } else {
                 add = true;
