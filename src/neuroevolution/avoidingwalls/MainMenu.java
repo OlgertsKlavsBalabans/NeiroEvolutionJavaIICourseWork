@@ -1,5 +1,7 @@
 package neuroevolution.avoidingwalls;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -15,8 +17,10 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class MainMenu {
+
     int generationsPerClick;
     int aiInstancesPerGeneration;
     int maximumGameLength;
@@ -24,14 +28,16 @@ public class MainMenu {
     int aiSurvivalRate;
     int freqvencyOfAddingMemoryCells;
     JFrame mainMenu = new JFrame("Main Menu");
-    JButton generateButton = new JButton("Generate");
+    JButton generateButton = new JButton("Generate new");
     JButton simulationForXGenerations = new JButton("Simulation for X generations");
     public int[][][] aiBrain = new int[10][100][4]; // brains per generation /memory cells/ each cells instructions
     public int[][] aiInput = new int[10][7];
     boolean aiLost = false;
     public int[][] aiFitness = new int[10][2];
     JLabel fitnessLabel = new JLabel("Highest fitness: unknown!");
-    JButton visualRepresentation = new JButton("Visual representation of best AI");
+    JButton visualRepresentationButton = new JButton("Visual representation of best AI");
+    boolean thereIsGeneratedAi = false;
+    public int[][] bestBrain = new int[100][4];
 
     MainMenu() {
 
@@ -61,7 +67,7 @@ public class MainMenu {
         mainMenu.addWindowListener(new CustomWindowCloser());
         mainMenu.setResizable(false);
         mainMenu.add(generateButton);
-        generateButton.setBounds(200, 50, 100, 20);
+        generateButton.setBounds(180, 50, 150, 20);
         generateButton.setVisible(true);
         mainMenu.add(simulationForXGenerations);
         simulationForXGenerations.setBounds(150, 100, 200, 20);
@@ -72,9 +78,37 @@ public class MainMenu {
         fitnessLabel.setBounds(175, 200, 200, 20);
         fitnessLabel.setVisible(true);
         mainMenu.add(fitnessLabel);
-        visualRepresentation.setVisible(true);
-        visualRepresentation.setBounds(140, 150, 225, 20);
-        mainMenu.add(visualRepresentation);
+        visualRepresentationButton.setVisible(true);
+        visualRepresentationButton.setBounds(140, 150, 225, 20);
+        mainMenu.add(visualRepresentationButton);
+        visualRepresentationButton.addMouseListener(new visualRepresentationMouseListener());
+    }
+
+    class visualRepresentationMouseListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (thereIsGeneratedAi == true) {
+                new VisualRepresentation();
+
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
 
     }
 
@@ -199,8 +233,9 @@ public class MainMenu {
             fitnessLabel.setText("Highest fitness: " + aiFitness[1][0]);
             makeNewGeneration();
 
-            //save best ai (thats for later)
+            saveBestAI();
             resetVariablesAndArrays();
+            thereIsGeneratedAi = true;
         }
 
         @Override
@@ -215,6 +250,16 @@ public class MainMenu {
         public void mouseExited(MouseEvent e) {
         }
 
+    }
+
+    void saveBestAI() {
+        for (int i = 0; i < 100; i++) {
+
+            for (int l = 0; l < 4; l++) {
+                bestBrain[i][l] = aiBrain[aiFitness[0][1]][i][l];
+            }
+
+        }
     }
 
     void resetVariablesAndArrays() {
@@ -308,6 +353,7 @@ public class MainMenu {
 
             }
             System.out.println("Done generating!");
+            thereIsGeneratedAi = false;
         }
 
         @Override
@@ -320,6 +366,147 @@ public class MainMenu {
 
         @Override
         public void mouseExited(MouseEvent e) {
+        }
+
+    }
+
+    public class VisualRepresentation implements Runnable {
+
+        JFrame visualRepresentation = new JFrame("Best AI");
+        JButton startVisualRepresentationButton = new JButton("Start");
+        JPanel[][] cubeForVisualRepresentation = new JPanel[10][7];
+
+        VisualRepresentation() {
+            visualRepresentation.setBounds(0, 0, 500, 350);
+            visualRepresentation.setVisible(true);
+            visualRepresentation.setResizable(false);
+            visualRepresentation.setLayout(null);
+            startVisualRepresentationButton.setBounds(150, 50, 100, 20);
+            visualRepresentation.add(startVisualRepresentationButton);
+            startVisualRepresentationButton.addMouseListener(new startVisualRepresentationMouseListener());
+
+        }
+
+        @Override
+        public void run() {
+            
+            aiInput[0][3] = 2;
+            aiLost = false;
+            for (int g = 0; g < 100; g++) { // which game tick
+                if (aiLost == true) {
+                    //System.out.println("AI" + l + "Lost!" + aiFitness[l][0]);
+                } else {
+                    moveAiInputForward();
+                    aiInputChange(g);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        System.out.println("Visual representation thred interrupted ERROR (in MainMenu.java)");
+                    }
+                    drawNextFrame();
+                    //next frame
+                    for (int k = 0; k < 100; k++) { // which memory cell
+                        // System.out.println("checking one memory cell");
+
+                        if (bestBrain[k][3] > 0) { //checks if empty
+                            if (aiInput[bestBrain[k][0]][bestBrain[k][1]] == bestBrain[k][2]) {
+
+                                if (bestBrain[k][3] == 1) {//goes up
+
+                                    aiGoesUp();
+                                }
+                                if (bestBrain[k][3] == 2) {//goes down
+                                    aiGoesDown();
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        class startVisualRepresentationMouseListener implements MouseListener {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                startVisualRepresentationButton.setVisible(false);
+                startVisualRepresentation();
+                resetVariablesAndArrays();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+        }
+
+        void startVisualRepresentation() {
+            Thread t = new Thread(this);
+            t.start();
+        }
+
+        void drawNextFrame() {
+             for (int i = 0; i < 10; i++) {
+
+                for (int l = 0; l < 7; l++) {
+                    System.out.println(aiInput[i][l]);
+                     System.out.println("i"+i);
+                      System.out.println("l"+l);
+                    if (aiInput[i][l] == 0) {
+                        visualRepresentation.add(cubeForVisualRepresentation[i][l] = new JPanel() {
+
+                            @Override
+                            public void paint(Graphics g) {
+                                g.setColor(Color.white);
+                                g.fillRect(0, 0, 50, 50);
+                            }
+                        }
+                        );
+                        cubeForVisualRepresentation[i][l].setBounds(50 * i, 50 * l, 50, 50);
+                    }
+                    if (aiInput[i][l] == 1) {
+                        visualRepresentation.add(cubeForVisualRepresentation[i][l] = new JPanel() {
+
+                            @Override
+                            public void paint(Graphics g) {
+                                g.setColor(Color.red);
+                                g.fillRect(0, 0, 50, 50);
+                            }
+                        }
+                        );
+                        cubeForVisualRepresentation[i][l].setBounds(50 * i, 50 * l, 50, 50);
+                    }
+                    if (aiInput[i][l] == 2) {
+                        visualRepresentation.add(cubeForVisualRepresentation[i][l] = new JPanel() {
+
+                            @Override
+                            public void paint(Graphics g) {
+                                g.setColor(Color.black);
+                                g.fillRect(0, 0, 50, 50);
+                            }
+                        }
+                        );
+                        cubeForVisualRepresentation[i][l].setBounds(50 * i, 50 * l, 50, 50);
+                    }
+                }
+            }
+
         }
 
     }

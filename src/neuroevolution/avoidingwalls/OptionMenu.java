@@ -22,12 +22,17 @@ public class OptionMenu {
     JFrame optionMenu = new JFrame("Options");
     JButton back = new JButton("Back");
     JTextField generationsPerClick = new JTextField("1");
-    JLabel generationsPerClickLabel = new JLabel("Generations Per Click"); // do this for the rest
+    JLabel generationsPerClickLabel = new JLabel("Generations per click:"); // do this for the rest
     JTextField aiInstancesPerGeneration = new JTextField("10");
     JTextField maximumGameLength = new JTextField("100");
     JTextField maximumMemoryCells = new JTextField("100");
     JTextField aiSurvivalRate = new JTextField("50");
     JTextField freqvencyOfAddingMemoryCells = new JTextField("4");
+    JLabel aiInstancesPerGenerationLabel = new JLabel("Ai instances per generation:");
+    JLabel maximumGameLengthLabel = new JLabel("Maximum game length:");
+    JLabel maximumMemoryCellsLabel = new JLabel("MaximumMemoryCells:");
+    JLabel aiSurvivalRateLabel = new JLabel("AI survival rate:");
+    JLabel freqvencyOfAddingMemoryCellsLabel = new JLabel("Freqvency of adding memory:");
 
     OptionMenu() {
         optionMenu.setBounds(0, 0, 500, 350);
@@ -37,21 +42,32 @@ public class OptionMenu {
         optionMenu.setLayout(null);
         back.setBounds(0, 300, 100, 20);
         optionMenu.add(back);
-        aiInstancesPerGeneration.setBounds(100, 50, 50, 20);
+        aiInstancesPerGeneration.setBounds(200, 50, 50, 20);
         optionMenu.add(aiInstancesPerGeneration);
-        maximumGameLength.setBounds(100, 100, 50, 20);
+        maximumGameLength.setBounds(200, 100, 50, 20);
         optionMenu.add(maximumGameLength);
-        maximumMemoryCells.setBounds(100, 150, 50, 20);
+        maximumMemoryCells.setBounds(200, 150, 50, 20);
         optionMenu.add(maximumMemoryCells);
-        aiSurvivalRate.setBounds(100, 200, 50, 20);
+        aiSurvivalRate.setBounds(200, 200, 50, 20);
         optionMenu.add(aiSurvivalRate);
-        freqvencyOfAddingMemoryCells.setBounds(100, 250, 50, 20);
+        freqvencyOfAddingMemoryCells.setBounds(200, 250, 50, 20);
 
         optionMenu.add(freqvencyOfAddingMemoryCells);
-        generationsPerClick.setBounds(300, 50, 50, 20);
+        generationsPerClick.setBounds(400, 50, 50, 20);
         optionMenu.add(generationsPerClick);
         back.addMouseListener(new backMouseListener());
-
+        generationsPerClickLabel.setBounds(250, 50, 200, 20);
+        optionMenu.add(generationsPerClickLabel);
+        aiInstancesPerGenerationLabel.setBounds(0, 50, 200, 20);
+        optionMenu.add(aiInstancesPerGenerationLabel);
+        maximumGameLengthLabel.setBounds(0, 100, 200, 20);
+        optionMenu.add(maximumGameLengthLabel);
+        maximumMemoryCellsLabel.setBounds(0, 150, 200, 20);
+        optionMenu.add(maximumMemoryCellsLabel);
+        aiSurvivalRateLabel.setBounds(0, 200, 200, 20);
+        optionMenu.add(aiSurvivalRateLabel);
+        freqvencyOfAddingMemoryCellsLabel.setBounds(0, 250, 200, 20);
+        optionMenu.add(freqvencyOfAddingMemoryCellsLabel);
     }
 
     class backMouseListener implements MouseListener {
@@ -66,18 +82,18 @@ public class OptionMenu {
             try {
                 Writer writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream("options.txt")));
-                writer.write("aiInstancesPerGeneration:"+newline);
-                writer.write(aiInstancesPerGeneration.getText()+ newline);
-                writer.write("maximumGameLength:"+newline);
-                writer.write(maximumGameLength.getText()+ newline);
-                writer.write("maximumMemoryCells:"+newline);
-                writer.write(maximumMemoryCells.getText()+ newline);
-                writer.write("aiSurvivalRate:"+newline);
-                writer.write(aiSurvivalRate.getText()+ newline);
-                writer.write("freqvencyOfAddingMemoryCells:"+newline);
-                writer.write(freqvencyOfAddingMemoryCells.getText()+ newline);
-                writer.write("generationsPerClick:"+newline);
-                writer.write(generationsPerClick.getText()+ newline);
+                writer.write("aiInstancesPerGeneration:" + newline);
+                writer.write(aiInstancesPerGeneration.getText() + newline);
+                writer.write("maximumGameLength:" + newline);
+                writer.write(maximumGameLength.getText() + newline);
+                writer.write("maximumMemoryCells:" + newline);
+                writer.write(maximumMemoryCells.getText() + newline);
+                writer.write("aiSurvivalRate:" + newline);
+                writer.write(aiSurvivalRate.getText() + newline);
+                writer.write("freqvencyOfAddingMemoryCells:" + newline);
+                writer.write(freqvencyOfAddingMemoryCells.getText() + newline);
+                writer.write("generationsPerClick:" + newline);
+                writer.write(generationsPerClick.getText() + newline);
                 writer.close();
 
             } catch (FileNotFoundException ex) {
