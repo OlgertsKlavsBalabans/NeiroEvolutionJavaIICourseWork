@@ -85,6 +85,8 @@ public class StartMenu {
 
         @Override
         public void mousePressed(MouseEvent e) {
+            new InfoMenu();
+            startMenu.dispose();
         }
 
         @Override
