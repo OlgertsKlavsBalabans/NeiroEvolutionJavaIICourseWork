@@ -1,0 +1,327 @@
+package neuroevolution.avoidingwalls;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+public class MainMenu {
+    int generationsPerClick;
+    int aiInstancesPerGeneration;
+    int maximumGameLength;
+    int maximumMemoryCells;
+    int aiSurvivalRate;
+    int freqvencyOfAddingMemoryCells;
+    JFrame mainMenu = new JFrame("Main Menu");
+    JButton generateButton = new JButton("Generate");
+    JButton simulationForXGenerations = new JButton("Simulation for X generations");
+    public int[][][] aiBrain = new int[10][100][4]; // brains per generation /memory cells/ each cells instructions
+    public int[][] aiInput = new int[10][7];
+    boolean aiLost = false;
+    public int[][] aiFitness = new int[10][2];
+    JLabel fitnessLabel = new JLabel("Highest fitness: unknown!");
+    JButton visualRepresentation = new JButton("Visual representation of best AI");
+
+    MainMenu() {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("options.txt"));
+            br.readLine();
+            aiInstancesPerGeneration = Integer.parseInt(br.readLine());
+            br.readLine();
+            maximumGameLength = Integer.parseInt(br.readLine());
+            br.readLine();
+            maximumMemoryCells = Integer.parseInt(br.readLine());
+            br.readLine();
+            aiSurvivalRate = Integer.parseInt(br.readLine());
+            br.readLine();
+            freqvencyOfAddingMemoryCells = Integer.parseInt(br.readLine());
+            br.readLine();
+            generationsPerClick = Integer.parseInt(br.readLine());
+            br.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found in MainMenu.java");
+        } catch (IOException ex) {
+            System.out.println("Problem reading file in MainMenu.java");
+        }
+
+        mainMenu.setBounds(0, 0, 500, 350);
+        mainMenu.setVisible(true);
+        mainMenu.addWindowListener(new CustomWindowCloser());
+        mainMenu.setResizable(false);
+        mainMenu.add(generateButton);
+        generateButton.setBounds(200, 50, 100, 20);
+        generateButton.setVisible(true);
+        mainMenu.add(simulationForXGenerations);
+        simulationForXGenerations.setBounds(150, 100, 200, 20);
+        simulationForXGenerations.setVisible(true);
+        mainMenu.setLayout(null);
+        generateButton.addMouseListener(new GenerateButtonMauseListener());
+        simulationForXGenerations.addMouseListener(new SimulationForXGenerationsMouseListener());
+        fitnessLabel.setBounds(175, 200, 200, 20);
+        fitnessLabel.setVisible(true);
+        mainMenu.add(fitnessLabel);
+        visualRepresentation.setVisible(true);
+        visualRepresentation.setBounds(140, 150, 225, 20);
+        mainMenu.add(visualRepresentation);
+
+    }
+
+    void aiGoesUp() {
+        boolean done = false;
+        int vertical = 1;
+        while (done == false) {
+            vertical = vertical + 1;
+            if (vertical >= 6) {
+                done = true;
+            }
+            if (aiInput[0][vertical] == 2) {
+
+                aiInput[0][vertical - 1] = aiInput[0][vertical];
+                aiInput[0][vertical] = 0;
+                done = true;
+
+            }
+        }
+    }
+
+    void aiGoesDown() {
+        boolean done = false;
+        int vertical = 0;
+        while (done == false) {
+            vertical = vertical + 1;
+            if (vertical >= 5) {
+                done = true;
+            }
+            if (aiInput[0][vertical] == 2) {
+
+                aiInput[0][vertical + 1] = aiInput[0][vertical];
+                aiInput[0][vertical] = 0;
+                done = true;
+
+            }
+        }
+    }
+
+    void aiBrainReactToaiInput() {
+        for (int l = 0; l < 10; l++) { // which brain
+            //clear input
+
+            aiInput[0][3] = 2;
+            aiLost = false;
+            for (int g = 0; g < 100; g++) { // which game tick
+                if (aiLost == true) {
+                    //System.out.println("AI" + l + "Lost!" + aiFitness[l][0]);
+                } else {
+                    moveAiInputForward();
+                    aiInputChange(g);
+                    //next frame
+                    aiFitness[l][0] = aiFitness[l][0] + 1;
+                    aiFitness[l][1] = l;
+                    for (int k = 0; k < 100; k++) { // which memory cell
+                        // System.out.println("checking one memory cell");
+
+                        if (aiBrain[l][k][3] > 0) { //checks if empty
+                            if (aiInput[aiBrain[l][k][0]][aiBrain[l][k][1]] == aiBrain[l][k][2]) {
+
+                                if (aiBrain[l][k][3] == 1) {//goes up
+
+                                    aiGoesUp();
+                                }
+                                if (aiBrain[l][k][3] == 2) {//goes down
+                                    aiGoesDown();
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    void aiInputChange(int tick) {
+        if (tick % 3 == 0) {
+            aiInput[9][tick % 7] = 1;
+            aiInput[9][(tick + 4) % 7] = 1;
+
+        }
+    }
+
+    void moveAiInputForward() {
+        for (int i = 0; i < 7; i++) { // does 0-6
+            //System.out.println(i); 
+
+            for (int l = 0; l < 10; l++) { // does 0-9
+                if (l == 9) { // this if prevents copy from non existing array spot
+                    aiInput[l][i] = 0;
+
+                } else {
+                    if (aiInput[l][i] == 2) {
+                        if (aiInput[l + 1][i] == 1) {
+                            aiLost = true;
+                        }
+                    } else {
+                        aiInput[l][i] = aiInput[l + 1][i];
+                    }
+                }
+            }
+        }
+    }
+
+    class SimulationForXGenerationsMouseListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+            aiBrainReactToaiInput();
+            System.out.println("Done with simulation!");
+            sortAiFitnessScores();
+            System.out.println("Best fitness :" + aiFitness[1][0] + " and it was the " + aiFitness[1][1] + ". AI!");
+            fitnessLabel.setText("Highest fitness: " + aiFitness[1][0]);
+            makeNewGeneration();
+
+            //save best ai (thats for later)
+            resetVariablesAndArrays();
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
+
+    }
+
+    void resetVariablesAndArrays() {
+        aiLost = false;
+        for (int[] row : aiInput) {
+            Arrays.fill(row, 0);
+        }
+        for (int[] row : aiFitness) {
+            Arrays.fill(row, 0);
+        }
+
+    }
+
+    void makeNewGeneration() {
+        Random rnd = new Random();
+        int hrassness = 50;
+        boolean add = true;
+        int firstEmtyCell = rnd.nextInt(100);
+        int survivors = 10 / (100 / 50); // 10 - how many ai In one generation
+        if (survivors < 1) {
+            survivors = 1;
+        }
+        for (int i = 0; i < 10 - survivors; i++) {
+            if (i % 3 == 0) {
+                add = false;
+            } else {
+                add = true;
+            }
+            for (int l = 0; l < 100; l++) {
+                for (int a = 0; a < 4; a++) {
+
+                    aiBrain[aiFitness[survivors + i][1]][l][a] = aiBrain[aiFitness[i % survivors][1]][l][a];
+                    if (aiBrain[aiFitness[survivors + i][1]][l][3] == 0) {
+                        firstEmtyCell = l;
+                    }
+                }
+            }
+            if (add == true) {
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][0] = rnd.nextInt(10);
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][1] = rnd.nextInt(7);
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][2] = rnd.nextInt(2);
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][3] = rnd.nextInt(2) + 1;
+
+            }
+            if ((add == false) && (firstEmtyCell > 0)) {
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][0] = 0;
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][1] = 0;
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][2] = 0;
+                aiBrain[aiFitness[survivors + i][1]][firstEmtyCell][3] = 0;
+            }
+        }
+    }
+
+    void sortAiFitnessScores() {
+        int tempFitness;
+
+        for (int i = 0; i < 10; i++) {
+
+            for (int l = 0; l < 9; l++) {
+
+                if (aiFitness[l][0] < aiFitness[l + 1][0]) {
+                    tempFitness = aiFitness[l][0];
+                    aiFitness[l][0] = aiFitness[l + 1][0];
+                    aiFitness[l + 1][0] = tempFitness;
+                    tempFitness = aiFitness[l][1];
+                    aiFitness[l][1] = aiFitness[l + 1][1];
+                    aiFitness[l + 1][1] = tempFitness;
+                }
+            }
+        }
+        System.out.println("Done with sorting fitness");
+
+    }
+
+    class GenerateButtonMauseListener implements MouseListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+            Random rnd = new Random();
+            resetVariablesAndArrays();
+            for (int i = 0; i < 10; i++) { // add option for brain to check for 2(player block) 
+                aiBrain[i][0][0] = rnd.nextInt(10);
+                aiBrain[i][0][1] = rnd.nextInt(7);
+                aiBrain[i][0][2] = rnd.nextInt(2);
+                aiBrain[i][0][3] = rnd.nextInt(2) + 1;
+
+            }
+            System.out.println("Done generating!");
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
+
+    }
+
+}
