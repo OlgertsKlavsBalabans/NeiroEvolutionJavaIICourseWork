@@ -33,7 +33,7 @@ public class OptionMenu {
     JLabel maximumMemoryCellsLabel = new JLabel("MaximumMemoryCells:");
     JLabel aiSurvivalRateLabel = new JLabel("AI survival rate:");
     JLabel freqvencyOfAddingMemoryCellsLabel = new JLabel("Freqvency of adding memory:");
-
+    boolean save = false;
     OptionMenu() {
         optionMenu.setBounds(0, 0, 500, 350);
         optionMenu.setVisible(true);
@@ -79,6 +79,30 @@ public class OptionMenu {
         @Override
         public void mousePressed(MouseEvent e) {
             String newline = System.getProperty("line.separator");
+            int x;
+            try{
+            save = true;
+            x = Integer.parseInt(aiInstancesPerGeneration.getText());
+            if (x<1){save = false;}
+            x = Integer.parseInt(maximumGameLength.getText());
+            if (x<1){save = false;}
+            x = Integer.parseInt(maximumMemoryCells.getText());
+            if (x<1){save = false;}
+            x = Integer.parseInt(aiSurvivalRate.getText());
+            if (x<1){save = false;}
+            x = Integer.parseInt(freqvencyOfAddingMemoryCells.getText());
+            if (x<1){save = false;}
+            x = Integer.parseInt(generationsPerClick.getText());
+            if (x<1){save = false;}
+            }
+            catch(Exception a){
+                save = false;
+                System.out.println("Wrong option input!");
+            }
+            
+            
+            
+            if (save == true) {
             try {
                 Writer writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream("options.txt")));
@@ -101,9 +125,13 @@ public class OptionMenu {
             } catch (IOException ex) {
                 System.out.println("Writing proces in OptionMenu isnt working!");
             }
+            
             new StartMenu();
             optionMenu.dispose();
-
+            }
+            else {
+                new ErrorMessage("Input a positive integer");   
+            }
         }
 
         @Override

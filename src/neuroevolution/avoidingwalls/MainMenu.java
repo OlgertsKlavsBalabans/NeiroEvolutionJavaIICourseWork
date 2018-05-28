@@ -232,7 +232,7 @@ public class MainMenu {
             System.out.println("Done with simulation!");
             sortAiFitnessScores();
             System.out.println("Best fitness :" + aiFitness[1][0] + " and it was the " + aiFitness[1][1] + ". AI!");
-            fitnessLabel.setText("Highest fitness: " + aiFitness[1][0]);
+            fitnessLabel.setText("Highest fitness: " + aiFitness[0][0]);
             makeNewGeneration();
 
             saveBestAI();
