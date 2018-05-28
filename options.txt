@@ -1,7 +1,7 @@
 aiInstancesPerGeneration:
 10
 maximumGameLength:
-100
+200
 maximumMemoryCells:
 100
 aiSurvivalRate:
@@ -9,4 +9,4 @@ aiSurvivalRate:
 freqvencyOfAddingMemoryCells:
 4
 generationsPerClick:
-2
+100

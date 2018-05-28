@@ -22,22 +22,25 @@ import javax.swing.JPanel;
 public class MainMenu {
 
     int generationsPerClick; //done
-    int aiInstancesPerGeneration;
-    int maximumGameLength;
-    int maximumMemoryCells;
-    int aiSurvivalRate;
-    int freqvencyOfAddingMemoryCells;
+    int aiInstancesPerGeneration;//done
+    int maximumGameLength;//done
+    int maximumMemoryCells;//done
+    int aiSurvivalRate;//done
+    int freqvencyOfAddingMemoryCells;//done
+
     JFrame mainMenu = new JFrame("Main Menu");
     JButton generateButton = new JButton("Generate new");
     JButton simulationForXGenerations = new JButton("Simulation for X generations");
-    public int[][][] aiBrain = new int[10][100][4]; // brains per generation /memory cells/ each cells instructions
-    public int[][] aiInput = new int[10][7];
-    boolean aiLost = false;
-    public int[][] aiFitness = new int[10][2];
+    
     JLabel fitnessLabel = new JLabel("Highest fitness: unknown!");
     JButton visualRepresentationButton = new JButton("Visual representation of best AI");
-    boolean thereIsGeneratedAi = false;
-    public int[][] bestBrain = new int[100][4];
+
+    int[][][] aiBrain; // brains per generation /memory cells/ each cells instructions
+     int[][] aiInput ;
+    boolean aiLost = false;
+     int[][] aiFitness ;
+        boolean thereIsGeneratedAi = false;
+     int[][] bestBrain ;
 
     MainMenu() {
 
@@ -61,7 +64,12 @@ public class MainMenu {
         } catch (IOException ex) {
             System.out.println("Problem reading file in MainMenu.java");
         }
-
+        aiBrain = new int[aiInstancesPerGeneration][maximumMemoryCells][4];
+        aiInput = new int[10][7];
+        aiFitness = new int[aiInstancesPerGeneration][2];
+        bestBrain = new int[maximumMemoryCells][4];
+        
+        
         mainMenu.setBounds(0, 0, 500, 350);
         mainMenu.setVisible(true);
         mainMenu.addWindowListener(new CustomWindowCloser());
@@ -149,12 +157,12 @@ public class MainMenu {
     }
 
     void aiBrainReactToaiInput() {
-        for (int l = 0; l < 10; l++) { // which brain
+        for (int l = 0; l < aiInstancesPerGeneration; l++) { // which brain
             //clear input
 
             aiInput[0][3] = 2;
             aiLost = false;
-            for (int g = 0; g < 100; g++) { // which game tick
+            for (int g = 0; g < maximumGameLength; g++) { // which game tick
                 if (aiLost == true) {
                     //System.out.println("AI" + l + "Lost!" + aiFitness[l][0]);
                 } else {
@@ -163,7 +171,7 @@ public class MainMenu {
                     //next frame
                     aiFitness[l][0] = aiFitness[l][0] + 1;
                     aiFitness[l][1] = l;
-                    for (int k = 0; k < 100; k++) { // which memory cell
+                    for (int k = 0; k < maximumMemoryCells; k++) { // which memory cell
                         // System.out.println("checking one memory cell");
 
                         if (aiBrain[l][k][3] > 0) { //checks if empty
@@ -256,7 +264,7 @@ public class MainMenu {
     }
 
     void saveBestAI() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < maximumMemoryCells; i++) {
 
             for (int l = 0; l < 4; l++) {
                 bestBrain[i][l] = aiBrain[aiFitness[0][1]][i][l];
@@ -280,18 +288,18 @@ public class MainMenu {
         Random rnd = new Random();
         int hrassness = aiSurvivalRate;
         boolean add = true;
-        int firstEmtyCell = rnd.nextInt(100);
-        int survivors = 10 / (100 / 50); // 10 - how many ai In one generation
+        int firstEmtyCell = rnd.nextInt(maximumMemoryCells);
+        int survivors = aiInstancesPerGeneration / (100 / hrassness); // 10 - how many ai In one generation
         if (survivors < 1) {
             survivors = 1;
         }
-        for (int i = 0; i < 10 - survivors; i++) {
+        for (int i = 0; i < aiInstancesPerGeneration - survivors; i++) {
             if (i % freqvencyOfAddingMemoryCells == 0) {
                 add = false;
             } else {
                 add = true;
             }
-            for (int l = 0; l < 100; l++) {
+            for (int l = 0; l < maximumMemoryCells; l++) {
                 for (int a = 0; a < 4; a++) {
 
                     aiBrain[aiFitness[survivors + i][1]][l][a] = aiBrain[aiFitness[i % survivors][1]][l][a];
@@ -319,9 +327,9 @@ public class MainMenu {
     void sortAiFitnessScores() {
         int tempFitness;
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < aiInstancesPerGeneration; i++) {
 
-            for (int l = 0; l < 9; l++) {
+            for (int l = 0; l < aiInstancesPerGeneration-1; l++) {
 
                 if (aiFitness[l][0] < aiFitness[l + 1][0]) {
                     tempFitness = aiFitness[l][0];
@@ -348,7 +356,7 @@ public class MainMenu {
 
             Random rnd = new Random();
             resetVariablesAndArrays();
-            for (int i = 0; i < 10; i++) { // add option for brain to check for 2(player block) 
+            for (int i = 0; i < aiInstancesPerGeneration; i++) { // add option for brain to check for 2(player block) 
                 aiBrain[i][0][0] = rnd.nextInt(10);
                 aiBrain[i][0][1] = rnd.nextInt(7);
                 aiBrain[i][0][2] = rnd.nextInt(2);
@@ -380,7 +388,7 @@ public class MainMenu {
         JPanel[][] cubeForVisualRepresentation = new JPanel[10][7];
 
         VisualRepresentation() {
-            visualRepresentation.setBounds(0, 0, 500, 350);
+            visualRepresentation.setBounds(0, 0, 500, 375);
             visualRepresentation.setVisible(true);
             visualRepresentation.setResizable(false);
             visualRepresentation.setLayout(null);
@@ -395,7 +403,7 @@ public class MainMenu {
             
             aiInput[0][3] = 2;
             aiLost = false;
-            for (int g = 0; g < 100; g++) { // which game tick
+            for (int g = 0; g < maximumGameLength; g++) { // which game tick
                 if (aiLost == true) {
                     //System.out.println("AI" + l + "Lost!" + aiFitness[l][0]);
                 } else {
@@ -408,7 +416,7 @@ public class MainMenu {
                     }
                     drawNextFrame();
                     //next frame
-                    for (int k = 0; k < 100; k++) { // which memory cell
+                    for (int k = 0; k < maximumMemoryCells; k++) { // which memory cell
                         // System.out.println("checking one memory cell");
 
                         if (bestBrain[k][3] > 0) { //checks if empty

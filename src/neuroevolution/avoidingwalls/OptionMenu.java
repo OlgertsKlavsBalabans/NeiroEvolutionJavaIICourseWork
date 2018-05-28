@@ -89,7 +89,7 @@ public class OptionMenu {
             x = Integer.parseInt(maximumMemoryCells.getText());
             if (x<1){save = false;}
             x = Integer.parseInt(aiSurvivalRate.getText());
-            if (x<1){save = false;}
+            if ((x<1)||(x>100)){save = false;}
             x = Integer.parseInt(freqvencyOfAddingMemoryCells.getText());
             if (x<1){save = false;}
             x = Integer.parseInt(generationsPerClick.getText());
