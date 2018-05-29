@@ -101,8 +101,6 @@ public class MainMenu {
         mainMenu.add(doneWithSimulation);
     }
 
-   
-
     class backMouseListener implements MouseListener {
 
         @Override
@@ -309,27 +307,27 @@ public class MainMenu {
             }
 
         }
-         String newline = System.getProperty("line.separator");
+        String newline = System.getProperty("line.separator");
 
-            try {
-                Writer writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream("BestAi.txt")));
-                for (int j = 0 ; j<maximumMemoryCells;j++){
-                    writer.write("MemoryCell: "+j); 
-                    for (int l= 0; l<4 ; l++){
-                       writer.write(" " + bestBrain[j][l]);
-                    }
-                    writer.write(newline);
+        try {
+            Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream("BestAi.txt")));
+            for (int j = 0; j < maximumMemoryCells; j++) {
+                writer.write("MemoryCell: " + j);
+                for (int l = 0; l < 4; l++) {
+                    writer.write(" " + bestBrain[j][l]);
                 }
-                
-                writer.close();
-
-            } catch (FileNotFoundException ex) {
-                System.out.println("Writing proces in MainMenu isnt working! (FILE)");
-            } catch (IOException ex) {
-                System.out.println("Writing proces in MainMenu isnt working!");
+                writer.write(newline);
             }
-        
+
+            writer.close();
+
+        } catch (FileNotFoundException ex) {
+            System.out.println("Writing proces in MainMenu isnt working! (FILE)");
+        } catch (IOException ex) {
+            System.out.println("Writing proces in MainMenu isnt working!");
+        }
+
     }
 
     void resetVariablesAndArrays() {
@@ -347,12 +345,14 @@ public class MainMenu {
         Random rnd = new Random();
         int hrassness = aiSurvivalRate;
         boolean add = true;
+        boolean alreadyChosen = false;
         int firstEmtyCell = rnd.nextInt(maximumMemoryCells);
         int survivors = aiInstancesPerGeneration / (100 / hrassness); // 10 - how many ai In one generation
         if (survivors < 1) {
             survivors = 1;
         }
         for (int i = 0; i < aiInstancesPerGeneration - survivors; i++) {
+            alreadyChosen = false;
             if (i % freqvencyOfAddingMemoryCells == 0) {
                 add = false;
             } else {
@@ -362,8 +362,11 @@ public class MainMenu {
                 for (int a = 0; a < 4; a++) {
 
                     aiBrain[aiFitness[survivors + i][1]][l][a] = aiBrain[aiFitness[i % survivors][1]][l][a];
-                    if (aiBrain[aiFitness[survivors + i][1]][l][3] == 0) {
+                    if ((aiBrain[aiFitness[survivors + i][1]][l][3] == 0) && (alreadyChosen == false)) {
+                        alreadyChosen = true;
                         firstEmtyCell = l;
+                        System.out.println(firstEmtyCell);
+
                     }
                 }
             }
