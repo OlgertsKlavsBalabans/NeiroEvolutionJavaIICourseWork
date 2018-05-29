@@ -365,7 +365,7 @@ public class MainMenu {
                     if ((aiBrain[aiFitness[survivors + i][1]][l][3] == 0) && (alreadyChosen == false)) {
                         alreadyChosen = true;
                         firstEmtyCell = l;
-                        System.out.println(firstEmtyCell);
+                       // System.out.println(firstEmtyCell);
 
                     }
                 }
